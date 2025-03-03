@@ -1,17 +1,20 @@
-import {
-  JupyterFrontEnd,
-  JupyterFrontEndPlugin
-} from '@jupyterlab/application';
+import { JupyterFrontEnd, JupyterFrontEndPlugin } from "@jupyterlab/application";
+import { IEditorLanguageRegistry } from "@jupyterlab/codemirror";
+import { LanguageSupport } from "@codemirror/language";
+import { macaulay2 } from "codemirror-lang-macaulay2";
 
-/**
- * Initialization data for the jupyterlab-macaulay2 extension.
- */
 const plugin: JupyterFrontEndPlugin<void> = {
-  id: 'jupyterlab-macaulay2:plugin',
-  description: 'CodeMirror-based syntax highlighting for Macaulay2 in Jupyter code cells',
+  id: "jupyterlab-macaulay2:plugin",
   autoStart: true,
-  activate: (app: JupyterFrontEnd) => {
-    console.log('JupyterLab extension jupyterlab-macaulay2 is activated!');
+  description: "CodeMirror-based syntax highlighting for Macaulay2 code",
+  requires: [IEditorLanguageRegistry],
+  activate: async (app: JupyterFrontEnd, registry: IEditorLanguageRegistry) => {
+    registry.addLanguage({
+      name: "Macaulay2",
+      mime: "text/x-macaulay2",
+      support: new LanguageSupport(macaulay2()),
+      extensions: ["m2"],
+    });
   }
 };
 

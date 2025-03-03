@@ -1295,7 +1295,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/commands@npm:^6.5.0":
+"@codemirror/commands@npm:^6.0.0, @codemirror/commands@npm:^6.5.0":
   version: 6.8.0
   resolution: "@codemirror/commands@npm:6.8.0"
   dependencies:
@@ -1473,7 +1473,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/language@npm:^6.0.0, @codemirror/language@npm:^6.10.1, @codemirror/language@npm:^6.3.0, @codemirror/language@npm:^6.4.0, @codemirror/language@npm:^6.6.0, @codemirror/language@npm:^6.8.0":
+"@codemirror/language@npm:^6.0.0, @codemirror/language@npm:^6.10.1, @codemirror/language@npm:^6.10.8, @codemirror/language@npm:^6.3.0, @codemirror/language@npm:^6.4.0, @codemirror/language@npm:^6.6.0, @codemirror/language@npm:^6.8.0":
   version: 6.10.8
   resolution: "@codemirror/language@npm:6.10.8"
   dependencies:
@@ -1487,7 +1487,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/legacy-modes@npm:^6.4.0":
+"@codemirror/legacy-modes@npm:^6.4.0, @codemirror/legacy-modes@npm:^6.4.3":
   version: 6.4.3
   resolution: "@codemirror/legacy-modes@npm:6.4.3"
   dependencies:
@@ -1507,7 +1507,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/search@npm:^6.5.6":
+"@codemirror/search@npm:^6.0.0, @codemirror/search@npm:^6.5.6":
   version: 6.5.10
   resolution: "@codemirror/search@npm:6.5.10"
   dependencies:
@@ -1518,7 +1518,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.4.0, @codemirror/state@npm:^6.4.1, @codemirror/state@npm:^6.5.0":
+"@codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.4.0, @codemirror/state@npm:^6.4.1, @codemirror/state@npm:^6.5.0, @codemirror/state@npm:^6.5.2":
   version: 6.5.2
   resolution: "@codemirror/state@npm:6.5.2"
   dependencies:
@@ -2015,7 +2015,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/application@npm:^4.0.0, @jupyterlab/application@npm:^4.3.5":
+"@jupyterlab/application@npm:^4.3.5":
   version: 4.3.5
   resolution: "@jupyterlab/application@npm:4.3.5"
   dependencies:
@@ -4298,6 +4298,35 @@ __metadata:
   version: 4.6.0
   resolution: "co@npm:4.6.0"
   checksum: 5210d9223010eb95b29df06a91116f2cf7c8e0748a9013ed853b53f362ea0e822f1e5bb054fb3cefc645239a4cf966af1f6133a3b43f40d591f3b68ed6cf0510
+  languageName: node
+  linkType: hard
+
+"codemirror-lang-macaulay2@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "codemirror-lang-macaulay2@npm:0.1.1"
+  dependencies:
+    "@codemirror/language": ^6.0.0
+    "@codemirror/legacy-modes": ^6.4.3
+    "@codemirror/state": ^6.5.2
+    "@lezer/highlight": ^1.0.0
+    "@lezer/lr": ^1.0.0
+    codemirror: ^6.0.1
+  checksum: b85cb6427b39a7a207c8e18639fe03c547b0183cf84fa47496c30a046eaa9f3e634cffedd5a85cf44b7c622c5d5cb6049fb9c3ec8af16aa48bb316954ddca015
+  languageName: node
+  linkType: hard
+
+"codemirror@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "codemirror@npm:6.0.1"
+  dependencies:
+    "@codemirror/autocomplete": ^6.0.0
+    "@codemirror/commands": ^6.0.0
+    "@codemirror/language": ^6.0.0
+    "@codemirror/lint": ^6.0.0
+    "@codemirror/search": ^6.0.0
+    "@codemirror/state": ^6.0.0
+    "@codemirror/view": ^6.0.0
+  checksum: 1a78f7077ac5801bdbff162aa0c61bf2b974603c7e9a477198c3ce50c789af674a061d7c293c58b73807eda345c2b5228c38ad2aabb9319d552d5486f785cbef
   languageName: node
   linkType: hard
 
@@ -6799,8 +6828,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "jupyterlab-macaulay2@workspace:."
   dependencies:
-    "@jupyterlab/application": ^4.0.0
+    "@codemirror/language": ^6.10.8
+    "@jupyterlab/application": ^4.3.5
     "@jupyterlab/builder": ^4.0.0
+    "@jupyterlab/codemirror": ^4.3.5
     "@jupyterlab/testutils": ^4.0.0
     "@types/jest": ^29.2.0
     "@types/json-schema": ^7.0.11
@@ -6808,6 +6839,7 @@ __metadata:
     "@types/react-addons-linked-state-mixin": ^0.14.22
     "@typescript-eslint/eslint-plugin": ^6.1.0
     "@typescript-eslint/parser": ^6.1.0
+    codemirror-lang-macaulay2: ^0.1.1
     css-loader: ^6.7.1
     eslint: ^8.36.0
     eslint-config-prettier: ^8.8.0
