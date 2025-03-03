@@ -1,5 +1,7 @@
 # jupyterlab_macaulay2
 
+[![PyPI version](https://badge.fury.io/py/jupyterlab-macaulay2.svg)](https://badge.fury.io/py/jupyterlab-macaulay2)
+[![npm version](https://badge.fury.io/js/jupyterlab-macaulay2.svg)](https://badge.fury.io/js/jupyterlab-macaulay2)
 [![Github Actions Status](https://github.com/d-torrance/jupyterlab-macaulay2/workflows/Build/badge.svg)](https://github.com/d-torrance/jupyterlab-macaulay2/actions/workflows/build.yml)
 
 CodeMirror-based syntax highlighting for Macaulay2 in Jupyter code cells
