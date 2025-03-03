@@ -1,0 +1,15 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v4.3.8
+_src_path: https://github.com/jupyterlab/extension-template
+author_email: dtorrance@piedmont.edu
+author_name: Doug Torrance
+has_binder: false
+has_settings: false
+kind: frontend
+labextension_name: jupyterlab-macaulay2
+project_short_description: CodeMirror-based syntax highlighting for Macaulay2 in Jupyter
+    code cells
+python_name: jupyterlab_macaulay2
+repository: https://github.com/d-torrance/jupyterlab-macaulay2
+test: true
+
