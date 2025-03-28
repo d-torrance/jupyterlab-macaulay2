@@ -3,3 +3,8 @@
 
     https://jupyterlab.readthedocs.io/en/stable/developer/css.html
 */
+
+/* pre tags, e.g., examples in docs, should be left-aligned */
+.jp-RenderedHTMLCommon pre {
+    text-align: left !important;
+}
