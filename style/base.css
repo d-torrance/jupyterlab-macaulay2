@@ -6,5 +6,5 @@
 
 /* pre tags, e.g., examples in docs, should be left-aligned */
 .jp-RenderedHTMLCommon pre {
-    text-align: left !important;
+  text-align: left !important;
 }
