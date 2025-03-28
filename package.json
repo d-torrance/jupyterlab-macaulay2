@@ -1,6 +1,6 @@
 {
     "name": "jupyterlab-macaulay2",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "CodeMirror-based syntax highlighting for Macaulay2 in Jupyter code cells",
     "keywords": [
         "jupyter",
