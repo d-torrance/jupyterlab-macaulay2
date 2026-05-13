@@ -5710,12 +5710,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"highlightjs-macaulay2@npm:^0.5.2":
-  version: 0.5.2
-  resolution: "highlightjs-macaulay2@npm:0.5.2"
-  dependencies:
+"highlightjs-macaulay2@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "highlightjs-macaulay2@npm:0.6.0"
+  peerDependencies:
     highlight.js: ^11.11.1
-  checksum: 3fc4876effc22000af959897bd9e2b0b140473e709ab01e0bd249378266bb8c82f3c41b7efd9fb89783df1537c78d132eaa18342e2ff70232b3373bc1a0836e8
+  checksum: 980cf682e721a67a3a26951842c8c61fd41260f96d00311d4106d65879ad74e325995e57333cc5799303fe8ed350d5343ba2b92608b628f7e472aca680350d68
   languageName: node
   linkType: hard
 
@@ -6842,7 +6842,7 @@ __metadata:
     eslint-config-prettier: ^8.8.0
     eslint-plugin-prettier: ^5.0.0
     highlight.js: ^11.11.1
-    highlightjs-macaulay2: ^0.5.2
+    highlightjs-macaulay2: ^0.6.0
     jest: ^29.2.0
     npm-run-all2: ^7.0.1
     prettier: ^3.0.0
