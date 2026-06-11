@@ -1,7 +1,8 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: v4.5.2
+_commit: v4.6.2
 _src_path: https://github.com/jupyterlab/extension-template
-author_email: dtorrance@piedmont.edu
+advanced: false
+author_email: dtorrance9@gatech.edu
 author_name: Doug Torrance
 has_ai_rules: false
 has_binder: false
