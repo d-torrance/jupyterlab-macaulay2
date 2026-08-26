@@ -85,12 +85,13 @@
         "stylelint-config-standard": "^34.0.0",
         "stylelint-csstree-validator": "^3.0.0",
         "stylelint-prettier": "^4.0.0",
-        "typescript": "~5.5.4",
+        "typescript": "~6.0.3",
         "typescript-eslint": "^8.0.0",
         "yjs": "^13.5.0"
     },
     "resolutions": {
         "lib0": "0.2.111",
+        "ts-jest": "29.4.12",
         "webpack": "5.106.0"
     },
     "sideEffects": [
