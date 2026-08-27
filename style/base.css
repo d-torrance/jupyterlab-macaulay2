@@ -18,38 +18,50 @@
 }
 
 /*
-  The Macaulay2 Jupyter kernel tags values in output with highlight.js class
-  names (see replaceHypertext in JupyterKernel.m2), which the highlight.js
-  stylesheet used to color incidentally.  Map them onto the same variables
-  CodeMirror uses for the matching tokens instead, so output agrees with the
-  editor and follows the active theme.
+  Macaulay2 tags values in output for a syntax highlighter: a ring is a type, a
+  timing line is a comment, and so on.  Color those the same way CodeMirror
+  colors the matching tokens in the editor, so output agrees with the editor
+  and follows the active theme.
 
-  Every rule names the element the kernel uses -- SAMP for values, DIV for the
-  timing line -- because these class names belong to highlight.js rather than
-  to us: any other output in the notebook that carries highlight.js markup uses
-  SPAN, and must keep its own colors.
+  There are two vocabularies to cover.  Macaulay2 itself emits prism.js class
+  names -- "token class-name", "token function" and friends, see hypertext in
+  Core/hypertext.m2.  The Jupyter kernel currently rewrites them all to
+  highlight.js names (replaceHypertext in JupyterKernel.m2), from when the
+  kernel shipped highlight.js to do the highlighting.  Support both: the
+  hljs-* rules for the kernels in the wild, the token ones for output that
+  reaches us unrewritten.
 
-  hljs-string is on SAMP for the same reason and one more: the kernel also puts
-  it on nets, which come through as PRE and are general output rather than
-  strings, so they should keep the default text color.
+  Every rule names the element Macaulay2 uses -- SAMP for values, DIV for the
+  timing line -- because neither set of class names belongs to us.  Both
+  highlight.js and prism.js put their own on SPAN, and other output in the
+  notebook that carries them must keep its own colors.
+
+  Nets are the reason string is on SAMP: they come through as PRE, they are
+  general output rather than strings, and they should keep the default text
+  color.
 */
-.jp-RenderedHTMLCommon samp.hljs-type {
+.jp-RenderedHTMLCommon samp.hljs-type,
+.jp-RenderedHTMLCommon samp.token.class-name {
   color: var(--jp-mirror-editor-tag-color);
 }
 
-.jp-RenderedHTMLCommon samp.hljs-built_in {
+.jp-RenderedHTMLCommon samp.hljs-built_in,
+.jp-RenderedHTMLCommon samp.token.function {
   color: var(--jp-mirror-editor-def-color);
 }
 
-.jp-RenderedHTMLCommon samp.hljs-literal {
+.jp-RenderedHTMLCommon samp.hljs-literal,
+.jp-RenderedHTMLCommon samp.token.constant {
   color: var(--jp-mirror-editor-atom-color);
 }
 
-.jp-RenderedHTMLCommon samp.hljs-string {
+.jp-RenderedHTMLCommon samp.hljs-string,
+.jp-RenderedHTMLCommon samp.token.string {
   color: var(--jp-mirror-editor-string-color);
 }
 
-.jp-RenderedHTMLCommon div.hljs-comment {
+.jp-RenderedHTMLCommon div.hljs-comment,
+.jp-RenderedHTMLCommon div.token.comment {
   color: var(--jp-mirror-editor-comment-color);
 }
 

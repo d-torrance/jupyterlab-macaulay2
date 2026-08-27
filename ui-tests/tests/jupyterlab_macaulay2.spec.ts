@@ -57,19 +57,26 @@ test('highlights Macaulay2 code in HTML output', async ({ page }) => {
   await expect(code).toHaveText(source);
 });
 
-test('colors the kernel markup without touching highlight.js', async ({
+test('colors both class vocabularies, and only on the kernel elements', async ({
   page
 }) => {
-  // The kernel puts highlight.js class names on SAMP (see replaceHypertext in
-  // JupyterKernel.m2); highlight.js itself uses SPAN, and belongs to whichever
-  // other kernel or widget produced it.
+  // Macaulay2 emits prism.js class names; the Jupyter kernel rewrites them to
+  // highlight.js ones (replaceHypertext in JupyterKernel.m2).  Both go on SAMP
+  // for values and DIV for the timing line, while prism.js and highlight.js
+  // themselves use SPAN -- which belongs to whatever else produced it.
+  const markup = [
+    '<samp class="hljs-type">ZZ</samp>',
+    '<samp class="token class-name">ZZ</samp>',
+    '<div class="hljs-comment">-- 0 seconds</div>',
+    '<div class="token comment">-- 0 seconds</div>',
+    '<span class="hljs-type">ZZ</span>',
+    '<span class="token class-name">ZZ</span>'
+  ];
   await notebookWith(
     page,
-    [
-      'from IPython.display import HTML',
-      `HTML('<samp class="hljs-type">ZZ</samp>'`,
-      `     '<span class="hljs-type">ZZ</span>')`
-    ].join('\n')
+    ['from IPython.display import HTML', `HTML('''${markup.join('')}''')`].join(
+      '\n'
+    )
   );
 
   const color = (selector: string) =>
@@ -83,7 +90,16 @@ test('colors the kernel markup without touching highlight.js', async ({
     .evaluate(element => getComputedStyle(element).color);
 
   expect(await color('samp.hljs-type')).not.toBe(plain);
+  expect(await color('samp.token.class-name')).toBe(
+    await color('samp.hljs-type')
+  );
+  expect(await color('div.hljs-comment')).not.toBe(plain);
+  expect(await color('div.token.comment')).toBe(
+    await color('div.hljs-comment')
+  );
+
   expect(await color('span.hljs-type')).toBe(plain);
+  expect(await color('span.token.class-name')).toBe(plain);
 });
 
 test('highlights a Macaulay2 fence in a markdown cell', async ({ page }) => {
