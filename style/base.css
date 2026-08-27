@@ -5,6 +5,6 @@
 */
 
 /* pre tags, e.g., examples in docs, should be left-aligned */
-.jp-RenderedHTMLCommon pre {
+.jp-RenderedHTMLCommon pre:has(> code.language-macaulay2) {
   text-align: left !important;
 }
