@@ -1,9 +1,182 @@
-/**
- * Example of [Jest](https://jestjs.io/docs/getting-started) unit tests
- */
+import { JupyterFrontEnd } from '@jupyterlab/application';
+import {
+  EditorLanguageRegistry,
+  IEditorLanguageRegistry
+} from '@jupyterlab/codemirror';
+import plugin from '../index';
 
-describe('jupyterlab-macaulay2', () => {
-  it('should be tested', () => {
-    expect(1 + 1).toEqual(2);
+/**
+ * The plugin's observer is deliberately never disconnected -- it lives as long
+ * as the application does.  Across tests that would leak, with an observer from
+ * an earlier case highlighting a later case's fixture before it activates, so
+ * collect the instances and tear them down in between.
+ */
+const observers: MutationObserver[] = [];
+const NativeMutationObserver = globalThis.MutationObserver;
+
+beforeAll(() => {
+  globalThis.MutationObserver = function (callback: MutationCallback) {
+    const observer = new NativeMutationObserver(callback);
+    observers.push(observer);
+    return observer;
+  } as unknown as typeof MutationObserver;
+});
+
+afterAll(() => {
+  globalThis.MutationObserver = NativeMutationObserver;
+});
+
+afterEach(() => {
+  observers.forEach(observer => observer.disconnect());
+  observers.length = 0;
+  document.body.innerHTML = '';
+});
+
+const activate = async (): Promise<IEditorLanguageRegistry> => {
+  const registry = new EditorLanguageRegistry();
+  const activatePlugin = plugin.activate as (
+    app: JupyterFrontEnd,
+    registry: IEditorLanguageRegistry
+  ) => Promise<void>;
+  await activatePlugin({} as JupyterFrontEnd, registry);
+  return registry;
+};
+
+const waitFor = async (predicate: () => boolean): Promise<void> => {
+  for (let i = 0; i < 200; i++) {
+    if (predicate()) {
+      return;
+    }
+    await new Promise(resolve => setTimeout(resolve, 10));
+  }
+  throw new Error('timed out waiting for highlighting');
+};
+
+/** A documentation example: <pre><code class="language-macaulay2">. */
+const docExample = (text: string): HTMLElement => {
+  const pre = document.createElement('pre');
+  const code = document.createElement('code');
+  code.className = 'language-macaulay2';
+  code.textContent = text;
+  pre.appendChild(code);
+  document.body.appendChild(pre);
+  return code;
+};
+
+const highlighted = (element: HTMLElement) => () =>
+  element.dataset.highlighted === 'yes' &&
+  element.querySelectorAll('span').length > 0;
+
+describe('plugin metadata', () => {
+  it('is a Macaulay2 plugin that starts on its own', () => {
+    expect(plugin.id).toBe('jupyterlab-macaulay2:plugin');
+    expect(plugin.autoStart).toBe(true);
+  });
+
+  it('requires the editor language registry', () => {
+    expect(plugin.requires).toContain(IEditorLanguageRegistry);
+  });
+});
+
+describe('language registration', () => {
+  it('registers Macaulay2 with its mime type and file extension', async () => {
+    const registry = await activate();
+    const language = registry
+      .getLanguages()
+      .find(candidate => candidate.name === 'Macaulay2');
+
+    expect(language).toBeDefined();
+    expect(language!.mime).toBe('text/x-macaulay2');
+    expect(language!.extensions).toEqual(['m2']);
+    expect(language!.support).toBeDefined();
+  });
+
+  it('makes the language reachable by mime type', async () => {
+    const registry = await activate();
+    expect(registry.findByMIME('text/x-macaulay2')?.name).toBe('Macaulay2');
+  });
+});
+
+describe('highlighting Macaulay2 in output', () => {
+  it('highlights blocks that are already present when it activates', async () => {
+    const code = docExample('R = QQ[x,y]');
+    await activate();
+    await waitFor(highlighted(code));
+  });
+
+  it('highlights blocks added afterwards', async () => {
+    await activate();
+    const code = docExample('ideal(x,y)');
+    await waitFor(highlighted(code));
+  });
+
+  it('highlights a code element added on its own', async () => {
+    await activate();
+    const code = document.createElement('code');
+    code.className = 'language-macaulay2';
+    code.textContent = 'isPrime 7';
+    document.body.appendChild(code);
+    await waitFor(highlighted(code));
+  });
+
+  it('highlights inline code outside a pre, as in Usage lines', async () => {
+    await activate();
+    const dd = document.createElement('dd');
+    dd.innerHTML = '<code class="language-macaulay2">gcd(x,y,...)</code>';
+    document.body.appendChild(dd);
+    const code = dd.querySelector('code') as HTMLElement;
+    await waitFor(highlighted(code));
+  });
+
+  it('preserves the original text exactly', async () => {
+    await activate();
+    const source = 'R = QQ[x,y]\nideal(x^2, x*y)';
+    const code = docExample(source);
+    await waitFor(highlighted(code));
+    expect(code.textContent).toBe(source);
+  });
+
+  it('gives different tokens different styles', async () => {
+    await activate();
+    const code = docExample('if isPrime 5 then QQ else ZZ');
+    await waitFor(highlighted(code));
+
+    const classes = new Set(
+      Array.from(code.querySelectorAll('span')).map(span => span.className)
+    );
+    expect(classes.size).toBeGreaterThan(1);
+  });
+
+  it('does not highlight a block it has already done', async () => {
+    const registry = await activate();
+
+    // somewhere the observer will see again when it is re-inserted
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const code = document.createElement('code');
+    code.className = 'language-macaulay2';
+    code.textContent = 'matrix{{1,2},{3,4}}';
+    container.appendChild(code);
+    await waitFor(highlighted(code));
+
+    const highlight = jest.spyOn(registry, 'highlight');
+    container.remove();
+    document.body.appendChild(container);
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    expect(highlight).not.toHaveBeenCalled();
+    highlight.mockRestore();
+  });
+
+  it('leaves other languages alone', async () => {
+    await activate();
+    const code = document.createElement('code');
+    code.className = 'language-python';
+    code.textContent = 'import sys';
+    document.body.appendChild(code);
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(code.dataset.highlighted).toBeUndefined();
+    expect(code.querySelectorAll('span')).toHaveLength(0);
   });
 });

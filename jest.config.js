@@ -2,8 +2,12 @@ const jestJupyterLab = require('@jupyterlab/testutils/lib/jest-config');
 
 const esModules = [
   '@codemirror',
+  '@jupyter/react-components',
+  '@jupyter/web-components',
   '@jupyter/ydoc',
   '@jupyterlab/',
+  '@microsoft',
+  'exenv-es6',
   'lib0',
   'nanoid',
   'vscode-ws-jsonrpc',
@@ -24,5 +28,18 @@ module.exports = {
   ],
   coverageReporters: ['lcov', 'text'],
   testRegex: 'src/.*/.*.spec.ts[x]?$',
+  transform: {
+    ...baseConfig.transform,
+    // Transpile only.  Under ts-jest, module resolution runs in CommonJS mode
+    // and picks @codemirror/* up through their "require" condition, i.e. the
+    // .d.cts files, while @jupyterlab/codemirror's own declarations reference
+    // the .d.ts ones -- so identical types are reported as unrelated.  The
+    // production resolution has no such split, so type checking lives in
+    // "jlpm typecheck" instead.
+    '^.+\\.tsx?$': [
+      'ts-jest/legacy',
+      { tsconfig: './tsconfig.test.json', diagnostics: false }
+    ]
+  },
   transformIgnorePatterns: [`/node_modules/(?!${esModules}).+`]
 };
