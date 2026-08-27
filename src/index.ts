@@ -32,7 +32,16 @@ const plugin: JupyterFrontEndPlugin<void> = {
       element.dataset.highlighted = 'yes';
       const code = element.textContent ?? '';
       element.textContent = '';
-      await registry.highlight(code, language, element);
+      try {
+        await registry.highlight(code, language, element);
+      } catch (error) {
+        // The element is emptied before the await, so a failure here would
+        // otherwise leave the block blank with no way back to the source.
+        // Put the text back unhighlighted and keep the marker, so a block
+        // that cannot be parsed is not retried every time it is re-inserted.
+        element.textContent = code;
+        console.error('failed to highlight Macaulay2 code', error);
+      }
     };
 
     const highlightIn = (root: HTMLElement) => {

@@ -168,6 +168,24 @@ describe('highlighting Macaulay2 in output', () => {
     highlight.mockRestore();
   });
 
+  it('restores the source when highlighting fails', async () => {
+    const registry = new EditorLanguageRegistry();
+    jest.spyOn(registry, 'highlight').mockRejectedValue(new Error('boom'));
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const source = 'R = QQ[x,y]';
+    const code = docExample(source);
+    const activatePlugin = plugin.activate as (
+      app: JupyterFrontEnd,
+      registry: IEditorLanguageRegistry
+    ) => Promise<void>;
+    await activatePlugin({} as JupyterFrontEnd, registry);
+
+    await waitFor(() => error.mock.calls.length > 0);
+    expect(code.textContent).toBe(source);
+    error.mockRestore();
+  });
+
   it('leaves other languages alone', async () => {
     await activate();
     const code = document.createElement('code');
