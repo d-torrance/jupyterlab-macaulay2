@@ -24,18 +24,24 @@
   CodeMirror uses for the matching tokens instead, so output agrees with the
   editor and follows the active theme.
 
-  hljs-string is restricted to samp: the kernel also puts it on nets, which are
-  general output rather than strings and should keep the default text color.
+  Every rule names the element the kernel uses -- SAMP for values, DIV for the
+  timing line -- because these class names belong to highlight.js rather than
+  to us: any other output in the notebook that carries highlight.js markup uses
+  SPAN, and must keep its own colors.
+
+  hljs-string is on SAMP for the same reason and one more: the kernel also puts
+  it on nets, which come through as PRE and are general output rather than
+  strings, so they should keep the default text color.
 */
-.jp-RenderedHTMLCommon .hljs-type {
+.jp-RenderedHTMLCommon samp.hljs-type {
   color: var(--jp-mirror-editor-tag-color);
 }
 
-.jp-RenderedHTMLCommon .hljs-built_in {
+.jp-RenderedHTMLCommon samp.hljs-built_in {
   color: var(--jp-mirror-editor-def-color);
 }
 
-.jp-RenderedHTMLCommon .hljs-literal {
+.jp-RenderedHTMLCommon samp.hljs-literal {
   color: var(--jp-mirror-editor-atom-color);
 }
 
@@ -43,7 +49,7 @@
   color: var(--jp-mirror-editor-string-color);
 }
 
-.jp-RenderedHTMLCommon .hljs-comment {
+.jp-RenderedHTMLCommon div.hljs-comment {
   color: var(--jp-mirror-editor-comment-color);
 }
 

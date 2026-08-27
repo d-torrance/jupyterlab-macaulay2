@@ -57,6 +57,35 @@ test('highlights Macaulay2 code in HTML output', async ({ page }) => {
   await expect(code).toHaveText(source);
 });
 
+test('colors the kernel markup without touching highlight.js', async ({
+  page
+}) => {
+  // The kernel puts highlight.js class names on SAMP (see replaceHypertext in
+  // JupyterKernel.m2); highlight.js itself uses SPAN, and belongs to whichever
+  // other kernel or widget produced it.
+  await notebookWith(
+    page,
+    [
+      'from IPython.display import HTML',
+      `HTML('<samp class="hljs-type">ZZ</samp>'`,
+      `     '<span class="hljs-type">ZZ</span>')`
+    ].join('\n')
+  );
+
+  const color = (selector: string) =>
+    page
+      .locator(`.jp-RenderedHTMLCommon ${selector}`)
+      .evaluate(element => getComputedStyle(element).color);
+
+  const plain = await page
+    .locator('.jp-RenderedHTMLCommon')
+    .first()
+    .evaluate(element => getComputedStyle(element).color);
+
+  expect(await color('samp.hljs-type')).not.toBe(plain);
+  expect(await color('span.hljs-type')).toBe(plain);
+});
+
 test('leaves other languages in HTML output alone', async ({ page }) => {
   await notebookWith(page, htmlOutput('python', 'import sys'));
 
