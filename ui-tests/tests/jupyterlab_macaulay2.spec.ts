@@ -1,12 +1,67 @@
-import { expect, test } from '@jupyterlab/galata';
+import { IJupyterLabPageFixture, expect, test } from '@jupyterlab/galata';
+
+const source = 'R = QQ[x,y]';
+
+/** A comment, a string and a symbol: three different token styles. */
+const editorSource = ['-- a ring', 'R = QQ[x,y]', 'f = "hello"'].join('\n');
+
+/** A code element as the Macaulay2 kernel emits it, inside raw HTML output. */
+const htmlOutput = (language: string, code: string) =>
+  [
+    'from IPython.display import HTML',
+    `HTML('<pre><code class="language-${language}">${code}</code></pre>')`
+  ].join('\n');
 
 /**
- * Don't load JupyterLab webpage before running the tests.
- * This is required to ensure we capture all log messages.
+ * Ask for python3 explicitly: any kernel will do to emit the HTML, but the
+ * default depends on what is installed -- a machine with the Macaulay2 kernel
+ * would get that one and never run the Python below.
  */
-test.use({ autoGoto: false });
+const notebookWith = async (page: IJupyterLabPageFixture, cell: string) => {
+  await page.notebook.createNew(undefined, { kernel: 'python3' });
+  await page.notebook.setCell(0, 'code', cell);
+  await page.notebook.runCell(0, true);
+};
 
-// TODO: actually test the package!
-test('dummy test', async ({ page }) => {
-  expect(true).toBe(true);
+test('highlights a Macaulay2 file in the editor', async ({ page, tmpPath }) => {
+  // contents paths are relative to the server root, the file browser to the
+  // per-test directory
+  await page.contents.uploadContent(
+    editorSource,
+    'text',
+    `${tmpPath}/example.m2`
+  );
+  await page.filebrowser.open('example.m2');
+
+  const spans = page.locator('.cm-content .cm-line span');
+  await expect.poll(() => spans.count()).toBeGreaterThan(0);
+
+  // the language really is Macaulay2, not just any tokenizer: the comment,
+  // the string and the symbol come out styled differently
+  const classes = new Set(
+    await spans.evaluateAll(elements =>
+      elements.map(element => element.className)
+    )
+  );
+  expect(classes.size).toBeGreaterThan(1);
+});
+
+test('highlights Macaulay2 code in HTML output', async ({ page }) => {
+  await notebookWith(page, htmlOutput('macaulay2', source));
+
+  const code = page.locator('.jp-RenderedHTMLCommon code.language-macaulay2');
+  await expect(code).toHaveAttribute('data-highlighted', 'yes');
+  await expect(code.locator('span')).not.toHaveCount(0);
+
+  // highlighting rewrites the element's children, so check the text survived
+  await expect(code).toHaveText(source);
+});
+
+test('leaves other languages in HTML output alone', async ({ page }) => {
+  await notebookWith(page, htmlOutput('python', 'import sys'));
+
+  const code = page.locator('.jp-RenderedHTMLCommon code.language-python');
+  await expect(code).toHaveText('import sys');
+  await expect(code).not.toHaveAttribute('data-highlighted');
+  await expect(code.locator('span')).toHaveCount(0);
 });
