@@ -25,12 +25,32 @@ const plugin: JupyterFrontEndPlugin<void> = {
     // syntax highlighting in output
     hljs.registerLanguage('macaulay2', hljsMacaulay2);
 
-    const observer = new MutationObserver(() => {
-      document.querySelectorAll('code.language-macaulay2').forEach(element => {
-        const htmlElement = element as HTMLElement;
-        if (!htmlElement.dataset.highlighted) {
-          hljs.highlightElement(htmlElement);
-        }
+    // highlightElement() sets data-highlighted, so this selector both finds the
+    // work and skips what is already done
+    const pending = 'code.language-macaulay2:not([data-highlighted])';
+
+    const highlightIn = (root: HTMLElement) => {
+      if (root.matches(pending)) {
+        hljs.highlightElement(root);
+      }
+      root
+        .querySelectorAll<HTMLElement>(pending)
+        .forEach(element => hljs.highlightElement(element));
+    };
+
+    // anything rendered before we started watching
+    highlightIn(document.body);
+
+    // highlightElement() rewrites innerHTML, which is itself a mutation of the
+    // observed subtree, so only look at what was added rather than rescanning
+    // the whole document on every callback
+    const observer = new MutationObserver(records => {
+      records.forEach(record => {
+        record.addedNodes.forEach(node => {
+          if (node instanceof HTMLElement) {
+            highlightIn(node);
+          }
+        });
       });
     });
 
