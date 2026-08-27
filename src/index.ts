@@ -21,9 +21,11 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     registry.addLanguage(language);
 
-    // The kernel emits documentation as raw HTML, so rendermime never runs its
-    // markdown highlighter over it.  Highlight those blocks ourselves, using
-    // the same language and the same theme-aware styles as the editor above.
+    // Neither kind of rendered Macaulay2 arrives highlighted: the kernel emits
+    // documentation as raw HTML, which rendermime's markdown highlighter never
+    // sees, and fenced macaulay2 blocks in markdown cells come out plain too.
+    // Both carry the same class, so highlight them ourselves, using the same
+    // language and the same theme-aware styles as the editor above.
     const pending = 'code.language-macaulay2:not([data-highlighted])';
 
     const highlight = async (element: HTMLElement) => {

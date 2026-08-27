@@ -86,6 +86,20 @@ test('colors the kernel markup without touching highlight.js', async ({
   expect(await color('span.hljs-type')).toBe(plain);
 });
 
+test('highlights a Macaulay2 fence in a markdown cell', async ({ page }) => {
+  await page.notebook.createNew(undefined, { kernel: 'python3' });
+  await page.notebook.setCell(
+    0,
+    'markdown',
+    ['```macaulay2', source, '```'].join('\n')
+  );
+  await page.notebook.runCell(0, true);
+
+  const code = page.locator('.jp-RenderedHTMLCommon code.language-macaulay2');
+  await expect(code.locator('span')).not.toHaveCount(0);
+  await expect(code).toHaveText(source);
+});
+
 test('leaves other languages in HTML output alone', async ({ page }) => {
   await notebookWith(page, htmlOutput('python', 'import sys'));
 
