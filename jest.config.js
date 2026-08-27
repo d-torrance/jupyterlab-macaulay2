@@ -27,7 +27,12 @@ module.exports = {
     '!src/**/.ipynb_checkpoints/*'
   ],
   coverageReporters: ['lcov', 'text'],
-  testRegex: 'src/.*/.*.spec.ts[x]?$',
+  // Match against <rootDir> rather than testRegex: Jest tests the regex
+  // against absolute paths, so a bare "src/" also matches a checkout that
+  // happens to live under a directory named src -- and would then try to run
+  // the Playwright specs in ui-tests under jsdom.
+  testMatch: ['<rootDir>/src/**/*.spec.ts?(x)'],
+  testRegex: undefined,
   transform: {
     ...baseConfig.transform,
     // Transpile only.  Under ts-jest, module resolution runs in CommonJS mode
