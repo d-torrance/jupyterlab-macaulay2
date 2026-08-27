@@ -46,3 +46,28 @@
 .jp-RenderedHTMLCommon .hljs-comment {
   color: var(--jp-mirror-editor-comment-color);
 }
+
+/*
+  Documentation "Usage:" lines come through as
+
+    <dl class="element"><dt>Usage: </dt><dd><code ...>gcd(x,y,...)</code></dd></dl>
+
+  JupyterLab lays definition lists out as two floated columns --
+  ".jp-OutputArea-output dt" gets "float: left; width: 20%" and dd the matching
+  80% -- so the code lands a fifth of the way across the output area, well away
+  from the label it belongs to.  Undo the columns and keep the term and its
+  definition on one line.
+*/
+.jp-RenderedHTMLCommon dl.element {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin: 0;
+}
+
+.jp-RenderedHTMLCommon dl.element > dt,
+.jp-RenderedHTMLCommon dl.element > dd {
+  float: none;
+  width: auto;
+  margin: 0;
+}
