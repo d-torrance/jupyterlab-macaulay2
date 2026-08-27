@@ -4,17 +4,28 @@
     https://jupyterlab.readthedocs.io/en/stable/developer/css.html
 */
 
-/* pre tags, e.g., examples in docs, should be left-aligned */
-.jp-RenderedHTMLCommon pre:has(> code.language-macaulay2) {
+/*
+  pre tags, e.g., examples in docs, should be left-aligned.  Macaulay2 produces
+  two kinds: documentation examples, which wrap a language-macaulay2 code
+  block, and nets -- matrices, polynomials, anything multi-line -- which carry
+  a class of their own, "token net" from Macaulay2 and "hljs-string" once the
+  Jupyter kernel has rewritten it.
+*/
+.jp-RenderedHTMLCommon pre:has(> code.language-macaulay2),
+.jp-RenderedHTMLCommon pre.token.net,
+.jp-RenderedHTMLCommon pre.hljs-string {
   text-align: left !important;
 }
 
 /*
-  The Macaulay2 Jupyter kernel tags type annotations in output with
-  highlight.js class names (see replaceHypertext in JupyterKernel.m2).  We no
-  longer ship a highlight.js stylesheet, so map those classes onto the same
-  colors CodeMirror gives the corresponding tokens -- output then matches the
-  editor above it and follows the active theme.
+  The Macaulay2 Jupyter kernel tags values in output with highlight.js class
+  names (see replaceHypertext in JupyterKernel.m2), which the highlight.js
+  stylesheet used to color incidentally.  Map them onto the same variables
+  CodeMirror uses for the matching tokens instead, so output agrees with the
+  editor and follows the active theme.
+
+  hljs-string is restricted to samp: the kernel also puts it on nets, which are
+  general output rather than strings and should keep the default text color.
 */
 .jp-RenderedHTMLCommon .hljs-type {
   color: var(--jp-mirror-editor-tag-color);
@@ -28,7 +39,7 @@
   color: var(--jp-mirror-editor-atom-color);
 }
 
-.jp-RenderedHTMLCommon .hljs-string {
+.jp-RenderedHTMLCommon samp.hljs-string {
   color: var(--jp-mirror-editor-string-color);
 }
 
