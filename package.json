@@ -59,9 +59,7 @@
         "@codemirror/language": "^6.10.8",
         "@jupyterlab/application": "^4.3.5",
         "@jupyterlab/codemirror": "^4.3.5",
-        "codemirror-lang-macaulay2": "^0.3.1",
-        "highlight.js": "^11.11.1",
-        "highlightjs-macaulay2": "^0.6.2"
+        "codemirror-lang-macaulay2": "^0.3.1"
     },
     "devDependencies": {
         "@eslint/js": "^9.0.0",
