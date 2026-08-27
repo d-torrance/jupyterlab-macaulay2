@@ -8,3 +8,30 @@
 .jp-RenderedHTMLCommon pre:has(> code.language-macaulay2) {
   text-align: left !important;
 }
+
+/*
+  The Macaulay2 Jupyter kernel tags type annotations in output with
+  highlight.js class names (see replaceHypertext in JupyterKernel.m2).  We no
+  longer ship a highlight.js stylesheet, so map those classes onto the same
+  colors CodeMirror gives the corresponding tokens -- output then matches the
+  editor above it and follows the active theme.
+*/
+.jp-RenderedHTMLCommon .hljs-type {
+  color: var(--jp-mirror-editor-tag-color);
+}
+
+.jp-RenderedHTMLCommon .hljs-built_in {
+  color: var(--jp-mirror-editor-def-color);
+}
+
+.jp-RenderedHTMLCommon .hljs-literal {
+  color: var(--jp-mirror-editor-atom-color);
+}
+
+.jp-RenderedHTMLCommon .hljs-string {
+  color: var(--jp-mirror-editor-string-color);
+}
+
+.jp-RenderedHTMLCommon .hljs-comment {
+  color: var(--jp-mirror-editor-comment-color);
+}
