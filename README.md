@@ -6,6 +6,19 @@
 
 CodeMirror-based syntax highlighting for Macaulay2 in Jupyter code cells
 
+The extension registers Macaulay2 with JupyterLab's CodeMirror language
+registry, so code cells running the
+[Macaulay2 kernel](https://github.com/Macaulay2/Macaulay2-Jupyter-Kernel/) and
+files ending in `.m2` are highlighted as you type.
+
+It also highlights Macaulay2 in the kernel's _output_. The kernel emits
+documentation as raw HTML, which JupyterLab renders without highlighting, so
+the extension picks out those code blocks itself -- using the same language
+and the same theme-aware colors as the editor. Alongside that, it fixes a
+few things about how that output is laid out: examples and nets are
+left-aligned, and documentation `Usage:` lines keep the label and the code on
+one line.
+
 ## Requirements
 
 - JupyterLab >= 4.0.0
