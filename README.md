@@ -22,7 +22,7 @@ the label and the code on one line.
 
 ## Requirements
 
-- JupyterLab >= 4.0.0
+- JupyterLab >= 4.3.5
 
 ## Install
 
