@@ -68,6 +68,11 @@ npm = ["jlpm"]
 source_dir = "src"
 build_dir = "jupyterlab_macaulay2/labextension"
 
+[tool.jupyter-releaser]
+# The changelog is written by hand; it is also shipped as the Debian
+# upstream changelog, so entries are prose rather than PR titles.
+skip = ["build-changelog"]
+
 [tool.jupyter-releaser.options]
 version_cmd = "hatch version"
 

@@ -70,10 +70,24 @@ For the release workflows in this repository, make sure GitHub is configured wit
 
 When using [npm trusted publishing](https://docs.npmjs.com/trusted-publishers), `NPM_TOKEN` is not required (and trusted publishing is recommended). Configure `NPM_TOKEN` only if you are publishing without trusted publishers.
 
+PyPI and npm are both published from CI using trusted publishing, so no tokens are
+stored in the repository. Each registry needs a trusted publisher pointing at
+`publish-release.yml` in the `release` environment.
+
+Changelog entries are written by hand, so `build-changelog` is disabled in
+`pyproject.toml`. Write the new entry between the
+`<!-- <START NEW CHANGELOG ENTRY> -->` and `<!-- <END NEW CHANGELOG ENTRY> -->`
+markers in `CHANGELOG.md`, moving the previous entry below the end marker, and commit
+that before starting a release. The text between the markers becomes the body of the
+GitHub release.
+
 Here is a summary of the steps to cut a new release:
 
+- Write the changelog entry between the markers and commit it
 - Go to the Actions panel
-- Run the "Step 1: Prep Release" workflow
+- Run the "Step 1: Prep Release" workflow, giving a "New Version Specifier" of
+  `patch`, `minor`, `major`, or an explicit version such as `0.3.0`; leaving it at
+  `next` bumps the patch version
 - Check the draft changelog
 - Run the "Step 2: Publish Release" workflow
 
