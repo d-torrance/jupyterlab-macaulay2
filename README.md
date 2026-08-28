@@ -12,9 +12,10 @@ registry, so code cells running the
 files ending in `.m2` are highlighted as you type.
 
 It also highlights Macaulay2 that JupyterLab itself renders plain: `macaulay2`
-code fences in markdown cells, and the documentation the kernel emits as raw
-HTML, which rendermime's markdown highlighter never sees. Both use the same
-language and the same theme-aware colors as the editor.
+and `m2` code fences in markdown cells, whatever their case, and the
+documentation the kernel emits as raw HTML, which rendermime's markdown
+highlighter never sees. Both use the same language and the same theme-aware
+colors as the editor.
 
 Alongside that, it fixes a few things about how the kernel's output is laid
 out: examples and nets are left-aligned, and documentation `Usage:` lines keep
