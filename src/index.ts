@@ -6,6 +6,9 @@ import { IEditorLanguageRegistry } from '@jupyterlab/codemirror';
 import { LanguageSupport } from '@codemirror/language';
 import { macaulay2 as cmMacaulay2 } from 'codemirror-lang-macaulay2';
 
+// kept out of activate() so that deactivate() can stop it again
+let observer: MutationObserver | null = null;
+
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab-macaulay2:plugin',
   autoStart: true,
@@ -58,7 +61,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     // anything rendered before we started watching
     highlightIn(document.body);
 
-    const observer = new MutationObserver(records => {
+    observer = new MutationObserver(records => {
       records.forEach(record => {
         record.addedNodes.forEach(node => {
           if (node instanceof HTMLElement) {
@@ -69,6 +72,10 @@ const plugin: JupyterFrontEndPlugin<void> = {
     });
 
     observer.observe(document.body, { childList: true, subtree: true });
+  },
+  deactivate: () => {
+    observer?.disconnect();
+    observer = null;
   }
 };
 

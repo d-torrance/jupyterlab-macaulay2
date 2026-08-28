@@ -6,29 +6,11 @@ import {
 import plugin from '../index';
 
 /**
- * The plugin's observer is deliberately never disconnected -- it lives as long
- * as the application does.  Across tests that would leak, with an observer from
- * an earlier case highlighting a later case's fixture before it activates, so
- * collect the instances and tear them down in between.
+ * The observer would otherwise outlive its test, with a fixture from an
+ * earlier case being highlighted while a later one sets up.
  */
-const observers: MutationObserver[] = [];
-const NativeMutationObserver = globalThis.MutationObserver;
-
-beforeAll(() => {
-  globalThis.MutationObserver = function (callback: MutationCallback) {
-    const observer = new NativeMutationObserver(callback);
-    observers.push(observer);
-    return observer;
-  } as unknown as typeof MutationObserver;
-});
-
-afterAll(() => {
-  globalThis.MutationObserver = NativeMutationObserver;
-});
-
 afterEach(() => {
-  observers.forEach(observer => observer.disconnect());
-  observers.length = 0;
+  plugin.deactivate?.({} as JupyterFrontEnd);
   document.body.innerHTML = '';
 });
 
@@ -184,6 +166,17 @@ describe('highlighting Macaulay2 in output', () => {
     await waitFor(() => error.mock.calls.length > 0);
     expect(code.textContent).toBe(source);
     error.mockRestore();
+  });
+
+  it('stops watching once the plugin is deactivated', async () => {
+    await activate();
+    plugin.deactivate?.({} as JupyterFrontEnd);
+
+    const code = docExample('R = QQ[x,y]');
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    expect(code.dataset.highlighted).toBeUndefined();
+    expect(code.querySelectorAll('span')).toHaveLength(0);
   });
 
   it('leaves other languages alone', async () => {
