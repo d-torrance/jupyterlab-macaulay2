@@ -73,6 +73,13 @@ describe('language registration', () => {
     expect(language!.support).toBeDefined();
   });
 
+  it('answers to the m2 alias, whatever the case', async () => {
+    const registry = await activate();
+    expect(registry.findBest('m2')?.name).toBe('Macaulay2');
+    expect(registry.findBest('M2')?.name).toBe('Macaulay2');
+    expect(registry.findBest('macaulay2')?.name).toBe('Macaulay2');
+  });
+
   it('makes the language reachable by mime type', async () => {
     const registry = await activate();
     expect(registry.findByMIME('text/x-macaulay2')?.name).toBe('Macaulay2');
@@ -178,6 +185,18 @@ describe('highlighting Macaulay2 in output', () => {
     expect(code.dataset.highlighted).toBeUndefined();
     expect(code.querySelectorAll('span')).toHaveLength(0);
   });
+
+  it.each(['m2', 'M2', 'Macaulay2'])(
+    'highlights a block written as language-%s',
+    async name => {
+      await activate();
+      const code = document.createElement('code');
+      code.className = `language-${name}`;
+      code.textContent = 'R = QQ[x,y]';
+      document.body.appendChild(code);
+      await waitFor(highlighted(code));
+    }
+  );
 
   it('leaves other languages alone', async () => {
     await activate();

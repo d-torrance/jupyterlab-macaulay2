@@ -17,6 +17,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
   activate: async (app: JupyterFrontEnd, registry: IEditorLanguageRegistry) => {
     const language = {
       name: 'Macaulay2',
+      // "m2" is how the fences in Macaulay2's own documentation are written
+      alias: ['m2'],
       mime: 'text/x-macaulay2',
       support: new LanguageSupport(cmMacaulay2()),
       extensions: ['m2']
@@ -29,7 +31,12 @@ const plugin: JupyterFrontEndPlugin<void> = {
     // sees, and fenced macaulay2 blocks in markdown cells come out plain too.
     // Both carry the same class, so highlight them ourselves, using the same
     // language and the same theme-aware styles as the editor above.
-    const pending = 'code.language-macaulay2:not([data-highlighted])';
+    // Attribute selectors rather than .language-macaulay2, so that the case
+    // of the fence -- "M2", "Macaulay2" -- does not matter, as it does not to
+    // the language registry.
+    const pending = ['macaulay2', 'm2']
+      .map(name => `code[class~="language-${name}" i]:not([data-highlighted])`)
+      .join(', ');
 
     const highlight = async (element: HTMLElement) => {
       // mark before awaiting, so a later callback cannot pick up the same

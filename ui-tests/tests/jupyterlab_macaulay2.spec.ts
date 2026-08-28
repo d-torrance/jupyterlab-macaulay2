@@ -2,6 +2,9 @@ import { IJupyterLabPageFixture, expect, test } from '@jupyterlab/galata';
 
 const source = 'R = QQ[x,y]';
 
+/** the same, with a comment: two token styles to look for */
+const commented = `${source} -- a ring`;
+
 /** A comment, a string and a symbol: three different token styles. */
 const editorSource = ['-- a ring', 'R = QQ[x,y]', 'f = "hello"'].join('\n');
 
@@ -102,19 +105,43 @@ test('colors both class vocabularies, and only on the kernel elements', async ({
   expect(await color('span.token.class-name')).toBe(plain);
 });
 
-test('highlights a Macaulay2 fence in a markdown cell', async ({ page }) => {
-  await page.notebook.createNew(undefined, { kernel: 'python3' });
-  await page.notebook.setCell(
-    0,
-    'markdown',
-    ['```macaulay2', source, '```'].join('\n')
-  );
-  await page.notebook.runCell(0, true);
+// the fence name goes through the language registry, which matches the
+// registered name and its aliases without regard to case
+const fences = ['macaulay2', 'Macaulay2', 'm2', 'M2'];
 
-  const code = page.locator('.jp-RenderedHTMLCommon code.language-macaulay2');
-  await expect(code.locator('span')).not.toHaveCount(0);
-  await expect(code).toHaveText(source);
-});
+for (const name of fences) {
+  test(`highlights a \`\`\`${name} fence while it is edited`, async ({
+    page
+  }) => {
+    await page.notebook.createNew(undefined, { kernel: 'python3' });
+    await page.notebook.setCell(
+      0,
+      'markdown',
+      ['```' + name, commented, '```'].join('\n')
+    );
+
+    const tokens = page.locator('.jp-MarkdownCell .cm-content span');
+    await expect
+      .poll(() => tokens.evaluateAll(els => els.map(el => el.textContent)))
+      .toEqual(expect.arrayContaining(['QQ', '-- a ring']));
+  });
+
+  test(`highlights a \`\`\`${name} fence once rendered`, async ({ page }) => {
+    await page.notebook.createNew(undefined, { kernel: 'python3' });
+    await page.notebook.setCell(
+      0,
+      'markdown',
+      ['```' + name, source, '```'].join('\n')
+    );
+    await page.notebook.runCell(0, true);
+
+    const code = page.locator(
+      `.jp-RenderedHTMLCommon code[class~="language-${name}"]`
+    );
+    await expect(code.locator('span')).not.toHaveCount(0);
+    await expect(code).toHaveText(source);
+  });
+}
 
 test('leaves other languages in HTML output alone', async ({ page }) => {
   await notebookWith(page, htmlOutput('python', 'import sys'));
